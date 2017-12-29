@@ -36,7 +36,13 @@
   <script charset="utf-8" src="js/dbhelper.js"></script>
   <script charset="utf-8" src="js/main.js"></script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrdyP-o7uXKptNtd05Iy0EIosHkmZoxpQ&libraries=places&callback=initMap"></script>
-
+  <script>
+    if('serviceWorker' in navigator) {
+      navigator.serviceWorker
+               .register('sw.js')
+               .then(() => { console.log("Service Worker Registered") }).catch(e => {console.log(e)});
+    }
+    </script>
 
   <footer id="footer">
     Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
