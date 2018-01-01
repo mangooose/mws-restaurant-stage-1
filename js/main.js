@@ -138,10 +138,14 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
   const picture = document.createElement('picture');
+  picture.tabIndex = 0;
+  picture.setAttribute('role', 'image');
+
   /* const source = document.createElement('source');
   source.srcset = `${DBHelper.imageUrlForRestaurant(restaurant).replace('.jpg','_small.webp')} 480w, ${DBHelper.imageUrlForRestaurant(restaurant).replace('.jpg','_medium.webp')} 725w, ${DBHelper.imageUrlForRestaurant(restaurant).replace('.jpg','_large.webp')} 800w  `;
  */  const image = document.createElement('img');
   image.className = 'restaurant-img';
+  image.alt = restaurant.name
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
   //picture.appendChild(source);
   picture.append(image);
@@ -151,18 +155,23 @@ createRestaurantHTML = (restaurant) => {
   details.className = 'restaurant-item';
   const name = document.createElement('h1');
   name.innerHTML = restaurant.name;
+  name.tabIndex = 0
   details.append(name);
 
   const neighborhood = document.createElement('p');
   neighborhood.innerHTML = restaurant.neighborhood;
+  neighborhood.tabIndex = 0
   details.append(neighborhood);
 
   const address = document.createElement('p');
   address.innerHTML = restaurant.address;
+  address.tabIndex = 0;
   details.append(address);
 
   const more = document.createElement('a');
   more.innerHTML = 'View Details';
+  more.setAttribute('role', 'button');
+  more.setAttribute('aria-label', `View details about ${restaurant.name}`);
   more.href = DBHelper.urlForRestaurant(restaurant);
   details.append(more);
   li.append(details);
