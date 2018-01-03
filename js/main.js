@@ -141,13 +141,13 @@ createRestaurantHTML = (restaurant) => {
   picture.tabIndex = 0;
   picture.setAttribute('role', 'image');
 
-  /* const source = document.createElement('source');
-  source.srcset = `${DBHelper.imageUrlForRestaurant(restaurant).replace('.jpg','_small.webp')} 480w, ${DBHelper.imageUrlForRestaurant(restaurant).replace('.jpg','_medium.webp')} 725w, ${DBHelper.imageUrlForRestaurant(restaurant).replace('.jpg','_large.webp')} 800w  `;
- */  const image = document.createElement('img');
+  const source = document.createElement('source');
+  source.srcset = `${DBHelper.imageUrlForRestaurant(restaurant).replace('.jpg','_small.webp')} 375w, ${DBHelper.imageUrlForRestaurant(restaurant).replace('.jpg','_medium.webp')} 480w, ${DBHelper.imageUrlForRestaurant(restaurant).replace('.jpg','_large.webp')} 800w  `;
+  const image = document.createElement('img');
   image.className = 'restaurant-img';
   image.alt = restaurant.name
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
-  //picture.appendChild(source);
+  picture.appendChild(source);
   picture.append(image);
   li.append(picture);
   
