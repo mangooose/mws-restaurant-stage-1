@@ -44,7 +44,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 }
 #footer {
   background-color: #444;
-  color: #aaa;
+  color: #DDD;
   font-size: 8pt;
   letter-spacing: 1px;
   padding: 25px 0;
@@ -92,7 +92,7 @@ nav h1 a {
 
 /* Add a color to all links inside the list */
 #breadcrumb li a {
-    color: #0275d8;
+    color: #06B;
     text-decoration: none;
 }
 
@@ -170,7 +170,7 @@ nav h1 a {
   padding:5%;
 }
 #restaurants-list li h1 {
-  color: #f18200;
+  color: #158;
   font-family: Arial,sans-serif;
   font-size: 14pt;
   font-weight: 200;
@@ -184,7 +184,7 @@ nav h1 a {
   font-size: 11pt;
 }
 #restaurants-list li a {
-  background-color: orange;
+  background-color: #158;
   border-bottom: 3px solid #eee;
   color: #fff;
   display: inline-block;
@@ -222,7 +222,7 @@ nav h1 a {
   width: 100%;
 }
 #restaurant-name {
-  color: #f18200;
+  color: #158;
   font-family: Arial,sans-serif;
   font-size: 20pt;
   font-weight: 200;
@@ -263,7 +263,7 @@ nav h1 a {
   border-top: 1px solid #fff;
 }
 #reviews-container h2 {
-  color: #f58500;
+  color: #158;
   font-size: 24pt;
   font-weight: 300;
   letter-spacing: -1px;
@@ -287,8 +287,7 @@ nav h1 a {
   overflow: hidden;
   padding: 0;
   position: relative;
-  border-top-left-radius: 20px;
-  border-bottom-right-radius: 20px;
+  border-radius: 20px 0;
   width: 85%;
 }
 /* #reviews-list li p {
@@ -313,7 +312,7 @@ nav h1 a {
 }
 .reviews-item-body span {
   padding: 5px;
-  background-color: #f90;
+  background-color: #158;
   color: #fff;
 }
 .reviews-item-title p {
