@@ -1,28 +1,27 @@
 /*Service worker*/
 
-var CACHE_NAME = "restaurant_reviewer_v1";
-var urlsToCache = [
+const CACHE_NAME = "restaurant_reviewer_v1";
+const urlsToCache = [
   "/",
   "index.html",
   "/restaurant.html",
   "css/styles.css",
   "js/dbhelper.js",
   "js/main.js",
-  "js/restaurant_info.js",
+  "js/restaurant_info.js"
 ];
 
-var allCaches = [CACHE_NAME];
+const allCaches = [CACHE_NAME];
 
-self.addEventListener("install", function(event) {
+self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(function(cache) {
+    caches.open(CACHE_NAME).then(cache => {
       return cache.addAll(urlsToCache);
     })
   );
 });
 
-
-self.addEventListener("fetch", function(event) {
+self.addEventListener("fetch", event => {
   const requestUrl = new URL(event.request.url);
 
   if (
@@ -30,8 +29,8 @@ self.addEventListener("fetch", function(event) {
     requestUrl.pathname.indexOf("data") > -1
   ) {
     event.respondWith(
-      caches.open(CACHE_NAME).then(function(cache) {
-        return cache.match(event.request).then(function(response) {
+      caches.open(CACHE_NAME).then(cache => {
+        return cache.match(event.request).then(response => {
           if (response) {
             fetchAndCache(event, cache);
             return response;
@@ -43,7 +42,7 @@ self.addEventListener("fetch", function(event) {
     );
   } else {
     event.respondWith(
-      caches.match(event.request).then(function(response) {
+      caches.match(event.request).then(response => {
         return response || fetch(event.request);
       })
     );
@@ -51,7 +50,7 @@ self.addEventListener("fetch", function(event) {
 });
 
 function fetchAndCache(event, cache) {
-  return fetch(event.request.clone()).then(function(response) {
+  return fetch(event.request.clone()).then(response => {
     if (response.status < 400) {
       cache.put(event.request, response.clone());
     }
@@ -59,18 +58,18 @@ function fetchAndCache(event, cache) {
   });
 }
 
-self.addEventListener("activate", function(event) {
+self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then(function(cacheNames) {
+    caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames
-          .filter(function(cacheName) {
+          .filter(cacheName => {
             return (
               cacheName.startsWith("restaurant_reviewer") &&
               !allCaches.includes(cacheName)
             );
           })
-          .map(function(cacheName) {
+          .map(cacheName => {
             return caches.delete(cacheName);
           })
       );
@@ -78,7 +77,7 @@ self.addEventListener("activate", function(event) {
   );
 });
 
-self.addEventListener("message", function(event) {
+self.addEventListener("message", event => {
   if (event.data.action === "skipWaiting") {
     self.skipWaiting();
   }
