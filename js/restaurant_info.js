@@ -62,8 +62,8 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const source = document.createElement('source');
 
   source.srcset = `${DBHelper.imageUrlForRestaurant(restaurant).replace('.jpg','_small.webp')} 375w, ${DBHelper.imageUrlForRestaurant(restaurant).replace('.jpg','_medium.webp')} 480w, ${DBHelper.imageUrlForRestaurant(restaurant).replace('.jpg','_large.webp')} 800w  `;
-  source.alt = `image ${restaurant.name}`;
-  img.alt = `image ${restaurant.name}`;
+  source.alt = `${restaurant.name} restaurant`;
+  img.alt = `${restaurant.name} restaurant`;
   picture.tabIndex = 0;
   img.src = DBHelper.imageUrlForRestaurant(restaurant);
   picture.appendChild(source);
