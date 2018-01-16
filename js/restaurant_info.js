@@ -72,7 +72,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.tabIndex = 0;
-  cuisine.innerHTML = `title ${restaurant.cuisine_type}`;
+  cuisine.innerHTML = `${restaurant.cuisine_type}`;
   cuisine.setAttribute('aria-label', `cuisine type ${restaurant.cuisine_type}`);
 
   // fill operating hours
@@ -109,7 +109,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  */
 fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const container = document.getElementById('reviews-container');
-  const title = document.createElement('h2');
+  const title = document.createElement('h3');
   title.tabIndex = 0;
   title.innerHTML = 'Reviews';
   container.appendChild(title);
@@ -171,6 +171,7 @@ fillBreadcrumb = (restaurant=self.restaurant) => {
   const breadcrumb = document.getElementById('breadcrumb');
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;
+  li.setAttribute('aria-curren','page');
   breadcrumb.appendChild(li);
 }
 
