@@ -13,7 +13,7 @@
   <meta name="msapplication-starturl" content="/index.html">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
-  <link rel="preload" as="style" href="css/styles.css" onload="this.rel='stylesheet'">
+ <!--  <link rel="preload" as="style" href="css/styles.css" onload="this.rel='stylesheet'"> -->
   <noscript>
     <link rel="stylesheet" href="css/styles.css">
   </noscript>
@@ -73,9 +73,6 @@
 
     .filter-options {
       display: flex;
-      width: 100%;
-      background-color: #185d8c;
-      align-items: center;
     }
   </style>
 </head>
@@ -118,17 +115,16 @@
       <strong>Restaurant Reviews</strong>
     </a> All Rights Reserved.
   </footer>
-  <script>
+<!--   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('sw.js')
         .then(() => { console.log("Service Worker Registered") }).catch(e => { console.log(e) });
     }
-  </script>
-  <script async src="js/idb.js" defer></script>
-  <script async src="js/lazysizes.min.js" defer></script>
-  <script async charset="utf-8" src="js/dbhelper.js" defer></script>
-  <script async charset="utf-8" src="js/main.js" defer></script>
+  </script> -->
+  <!-- <script src="js/storage.js"></script> -->
+  <!-- <script async charset="utf-8" src="js/dbhelper.js"></script> -->
+  <script async charset="utf-8" src="main.min.js"></script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCrdyP-o7uXKptNtd05Iy0EIosHkmZoxpQ&libraries=places&callback=initMap"></script>
 
 </body>

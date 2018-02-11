@@ -1,14 +1,16 @@
 /*Service worker*/
-
-const CACHE_NAME = "restaurant_reviewer_v1";
+const CACHE_NAME = "restaurant_reviewer_v2";
 const urlsToCache = [
   "/",
   "index.html",
   "/restaurant.html",
+  "/manifest.json",
   "css/styles.css",
   "js/dbhelper.js",
   "js/main.js",
-  "js/restaurant_info.js"
+  "js/idb.js",
+  "js/restaurant_info.js",
+  "js/lazysizes.min.js"
 ];
 
 const allCaches = [CACHE_NAME];
@@ -26,7 +28,7 @@ self.addEventListener("fetch", event => {
 
   if (
     requestUrl.pathname.indexOf("img") > -1 ||
-    requestUrl.pathname.indexOf("data") > -1
+    requestUrl.pathname.indexOf("restaurants") > -1
   ) {
     event.respondWith(
       caches.open(CACHE_NAME).then(cache => {
