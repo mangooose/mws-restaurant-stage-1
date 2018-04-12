@@ -69,14 +69,12 @@ class DBHelper {
             const restaurantsStore = tx.objectStore("restaurants");
 
             for (const restaurant of restaurants) {
-              console.log(restaurant);
               restaurantsStore.put(restaurant);
             }
             return tx.complete;
           })
           .then(_ => {
             callback(null, restaurants);
-            console.log("restaurants added");
           });
       })
       .catch(e => {
@@ -150,7 +148,6 @@ class DBHelper {
    */
   static createNewReview(review) {
     //return new Promise((resolve, reject) => {
-    console.log(review);
     return dbPromise
       .then(db => {
         const tx = db.transaction("reviews", "readwrite");
@@ -165,24 +162,12 @@ class DBHelper {
         return navigator.serviceWorker.ready;
       })
       .then(swRegistration => {
-        console.log("registered");
         localStorage.setItem("lastname", "Smith");
         return swRegistration.sync.register("createReview");
       })
       .finally(_ => {
         return review;
       });
-
-    /*       DBHelper.postAjax(`http://localhost:${1337}/reviews/`, review)
-        .then(data => {
-          resolve(JSON.parse(data));
-          console.log("data", data);
-        })
-        .catch(e => {
-          console.log(e);
-          reject(e);
-        }); */
-    // });
   }
 
   static postAjax(url, data) {
@@ -291,7 +276,6 @@ class DBHelper {
         callback(error, null);
       } else {
         // Get all neighborhoods from all restaurants
-        console.log(restaurants);
         const neighborhoods = restaurants.map(
           (v, i) => restaurants[i].neighborhood
         );

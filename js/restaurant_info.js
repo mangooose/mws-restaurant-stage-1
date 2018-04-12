@@ -17,7 +17,6 @@ window.initMap = () => {
       });
       fillBreadcrumb();
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
-      //initReviews();
     }
   });
 }
@@ -137,17 +136,13 @@ createFormGroup = (name, type) => {
      if(type === 'textarea') {
         input = document.createElement('textarea');
      }
-     //const input = document.createElement('input');
+
      input.type= type;
      input.id = name;
      input.required = true;
      formGroup.appendChild(input);
      return formGroup;
 }
-
-/* insertAfter = (newNode, referenceNode) => {
-  referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-} */
 
 submitReviewForm = _ => {
   const rating = document.getElementById('Rating').value;
@@ -250,7 +245,6 @@ formatDate = (date) => {
 
   if (month.length < 2) month = '0' + month;
   if (day.length < 2) day = '0' + day;
-  console.log(date, year, month, day)
   return [year, month, day].join('-');
 }
 
