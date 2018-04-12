@@ -1,4 +1,5 @@
 let restaurant;
+const reviews = [];
 var map;
 
 /**
@@ -16,8 +17,25 @@ window.initMap = () => {
       });
       fillBreadcrumb();
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
+      //initReviews();
     }
   });
+}
+
+initReviews = _ => {
+  const id = getParameterByName('id');
+  DBHelper.fetchReviewsByRestoId(id)
+  .then( reviews => {
+    console.log(reviews)
+      self.reviews = reviews;
+      if (!reviews) {
+        console.error(reviews);
+        return;
+      }  
+        // fill reviews
+      fillReviewsHTML();
+    }
+  );
 }
 
 /**
@@ -51,8 +69,9 @@ fetchRestaurantFromURL = (callback) => {
 fillRestaurantHTML = (restaurant = self.restaurant) => {
   const name = document.getElementById('restaurant-name');
   name.tabIndex = 0;
-  name.innerHTML = restaurant.name;
+  const favorite = restaurant.is_favorite === "true"? '&starf;': '&star;';
 
+  name.innerHTML = `${restaurant.name} <span class="star" data-is-favorite="${restaurant.is_favorite}" onclick="toggleFavorite()" >${favorite}</span>`;
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
   address.tabIndex = 0;
@@ -80,7 +99,104 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
     fillRestaurantHoursHTML();
   }
   // fill reviews
-  fillReviewsHTML();
+  initReviews();
+  // create rewview form html
+  createReviewFormHTML();
+
+}
+
+toggleFavorite = _ => {
+  const favorite = document.getElementsByClassName('star')[0];
+  const isFav = favorite.dataset.isFavorite === "true";
+  const id = getParameterByName('id');
+
+  favorite.dataset.isFavorite = !isFav
+  
+  if(!isFav){
+    favorite.innerHTML = '&starf;'
+  } else {
+    favorite.innerHTML = '&star;'
+  }
+  DBHelper.setFavorite(id, !isFav)
+  .then(data=> console.log(data))
+  .catch(e=>{console.log(e)});
+  
+}
+
+createFormGroup = (name, type) => {
+     const formGroup = document.createElement('div');
+     formGroup.className = 'form-group';
+
+     const label = document.createElement('label');
+     label.innerText = name;
+     label.setAttribute('for', name);
+     formGroup.appendChild(label);
+
+     let input = document.createElement('input');
+   
+     if(type === 'textarea') {
+        input = document.createElement('textarea');
+     }
+     //const input = document.createElement('input');
+     input.type= type;
+     input.id = name;
+     input.required = true;
+     formGroup.appendChild(input);
+     return formGroup;
+}
+
+/* insertAfter = (newNode, referenceNode) => {
+  referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+} */
+
+submitReviewForm = _ => {
+  const rating = document.getElementById('Rating').value;
+  const name = document.getElementById('Name').value;
+  const comments = document.getElementById('Comment').value;
+  const review = {rating,name,comments};
+  const noReviews = document.getElementById('noReviews');
+  const ul = document.getElementById('reviews-list');
+  
+  review.restaurant_id = parseInt(getParameterByName('id'));
+  if(noReviews){
+      noReviews.parentNode.removeChild(noReviews);
+    }  
+  return DBHelper.createNewReview(review)
+  .then(newReview=> {
+    ul.appendChild(createReviewHTML(newReview));
+    return false
+  })  
+  .catch(e => {
+    const newReview = review;
+    newReview.createdAt = new Date();
+    ul.appendChild(createReviewHTML(newReview));
+  })
+}
+
+createReviewFormHTML = _ => {
+  const container = document.getElementById('reviews-container');
+  const form = document.createElement('form');
+  form.onsubmit = evt => {
+      evt.preventDefault();
+      submitReviewForm();
+     return false;
+  }
+  form.className = 'review-form';
+
+  const title = document.createElement('h3');
+  title.tabIndex = 0;
+  title.innerHTML = 'Add your Review';
+  container.appendChild(title);
+  
+  const ratingForm = createFormGroup('Rating', 'number');
+  ratingForm.childNodes[1].max = 5;
+  ratingForm.childNodes[1].min = 1;
+  form.appendChild(ratingForm);
+  form.appendChild(createFormGroup('Name', 'text'));
+  form.appendChild(createFormGroup('Comment', 'textarea'));
+  form.appendChild(createFormGroup('Submit', 'submit'));
+
+  container.appendChild(form);  
 }
 
 /**
@@ -107,16 +223,13 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+fillReviewsHTML = (reviews = self.reviews) => {
   const container = document.getElementById('reviews-container');
-  const title = document.createElement('h3');
-  title.tabIndex = 0;
-  title.innerHTML = 'Reviews';
-  container.appendChild(title);
 
   if (!reviews) {
     const noReviews = document.createElement('p');
     noReviews.innerHTML = 'No reviews yet!';
+    noReviews.id = 'noReviews';
     container.appendChild(noReviews);
     return;
   }
@@ -124,7 +237,21 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   reviews.forEach(review => {
     ul.appendChild(createReviewHTML(review));
   });
-  container.appendChild(ul);
+  //container.appendChild(ul);
+  const title = document.getElementById('reviews-title');
+  title.parentNode.insertBefore(ul, title.nextSibling);
+}
+
+formatDate = (date) => {
+  let d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+
+  if (month.length < 2) month = '0' + month;
+  if (day.length < 2) day = '0' + day;
+  console.log(date, year, month, day)
+  return [year, month, day].join('-');
 }
 
 /**
@@ -144,7 +271,7 @@ createReviewHTML = (review) => {
   title.appendChild(name);
 
   const date = document.createElement('p');
-  date.innerHTML = review.date;
+  date.innerHTML = formatDate(review.createdAt);
   title.appendChild(date);
   li.appendChild(title);
 
@@ -171,7 +298,7 @@ fillBreadcrumb = (restaurant=self.restaurant) => {
   const breadcrumb = document.getElementById('breadcrumb');
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;
-  li.setAttribute('aria-curren','page');
+  li.setAttribute('aria-current','page');
   breadcrumb.appendChild(li);
 }
 

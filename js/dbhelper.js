@@ -5,6 +5,14 @@ const dbPromise = idb.open("restaurants-db", 1, upgradeDb => {
         keyPath: "id",
         autoIncrement: true
       });
+      var ReviewsStore = upgradeDb.createObjectStore("reviews", {
+        keyPath: "id",
+        autoIncrement: true
+      });
+      var createdReviews = upgradeDb.createObjectStore("createdReviews", {
+        keyPath: "id",
+        autoIncrement: true
+      });
   }
 });
 
@@ -21,6 +29,24 @@ class DBHelper {
     return `http://localhost:${port}/restaurants`;
   }
 
+  static fetchFromURL(url) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", url);
+      xhr.onload = _ => {
+        if (xhr.status === 200) {
+          resolve(JSON.parse(xhr.responseText));
+        } else {
+          reject(xhr.status);
+        }
+      };
+      xhr.onerror = e => {
+        console.log(e);
+        reject(e);
+      };
+      xhr.send();
+    });
+  }
   /**
    * Fetch all restaurants.
    */
@@ -35,16 +61,8 @@ class DBHelper {
         })
         .then(allRestaurants => callback(null, allRestaurants));
     }
-
-    let xhr = new XMLHttpRequest();
-    xhr.open("GET", DBHelper.DATABASE_URL);
-    xhr.onload = () => {
-      if (xhr.status === 200) {
-        // Got a success response from server!
-        const json = JSON.parse(xhr.responseText);
-        console.log(json);
-        const restaurants = json;
-
+    DBHelper.fetchFromURL(DBHelper.DATABASE_URL)
+      .then(restaurants => {
         dbPromise
           .then(db => {
             const tx = db.transaction("restaurants", "readwrite");
@@ -54,23 +72,16 @@ class DBHelper {
               console.log(restaurant);
               restaurantsStore.put(restaurant);
             }
-
             return tx.complete;
           })
           .then(_ => {
             callback(null, restaurants);
             console.log("restaurants added");
           });
-      } else {
-        // Oops!. Got an error from server.
-        const error = `Request failed. Returned status of ${xhr.status}`;
-        callback(error, null);
-      }
-    };
-    xhr.onerror = e => {
-      console.log(e);
-    };
-    xhr.send();
+      })
+      .catch(e => {
+        callback(e, null);
+      });
   }
 
   /**
@@ -88,22 +99,129 @@ class DBHelper {
         .then(restaurant => callback(null, restaurant));
     }
     // fetch all restaurants with proper error handling.
-    DBHelper.fetchRestaurants((error, restaurants) => {
-      if (error) {
+    DBHelper.fetchFromURL(`${DBHelper.DATABASE_URL}/${id}`)
+      .then(restaurant => {
+        callback(null, restaurant);
+      })
+      .catch(error => {
         callback(error, null);
-      } else {
-        const restaurant = restaurants.find(r => r.id == id);
-        if (restaurant) {
-          // Got the restaurant
-          callback(null, restaurant);
+      });
+  }
+
+  static fetchReviewsByRestoId(id) {
+    if (!navigator.onLine) {
+      return dbPromise
+        .then(db => {
+          return db
+            .transaction("reviews")
+            .objectStore("reviews")
+            .getAll();
+        })
+        .then(
+          reviews =>
+            reviews.filter(
+              review => review.restaurant_id == id
+            ) /* callback(null, restaurant) */
+        );
+    }
+    return DBHelper.fetchFromURL(
+      `http://localhost:${1337}/reviews/?restaurant_id=${id}`
+    )
+      .then(reviews => {
+        return dbPromise.then(db => {
+          const tx = db.transaction(["reviews"], "readwrite");
+          const reviewsStore = tx.objectStore("reviews");
+
+          for (const review of reviews) {
+            reviewsStore.put(review);
+          }
+          return reviews;
+        });
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  }
+
+  /**
+   * TODO
+   * awal 7aja nloadiw l reviews mel indexeddb when offline
+   * ba3d e submit ken online ab3ath ken offline wela request timeout sajal felindexeddb w kif t7ell lcnx thabat fel reviews w zeyed ab3thou
+   */
+  static createNewReview(review) {
+    //return new Promise((resolve, reject) => {
+    console.log(review);
+    return dbPromise
+      .then(db => {
+        const tx = db.transaction("reviews", "readwrite");
+        const reviewsStore = tx.objectStore("reviews");
+        reviewsStore.put(review);
+        return dbPromise;
+      })
+      .then(db => {
+        const tx = db.transaction("createdReviews", "readwrite");
+        const reviewsStore = tx.objectStore("createdReviews");
+        reviewsStore.put(review);
+        return navigator.serviceWorker.ready;
+      })
+      .then(swRegistration => {
+        console.log("registered");
+        localStorage.setItem("lastname", "Smith");
+        return swRegistration.sync.register("createReview");
+      })
+      .finally(_ => {
+        return review;
+      });
+
+    /*       DBHelper.postAjax(`http://localhost:${1337}/reviews/`, review)
+        .then(data => {
+          resolve(JSON.parse(data));
+          console.log("data", data);
+        })
+        .catch(e => {
+          console.log(e);
+          reject(e);
+        }); */
+    // });
+  }
+
+  static postAjax(url, data) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", url);
+      xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+      xhr.onload = _ => {
+        if (xhr.status == 200 || xhr.status == 201) {
+          resolve(xhr.responseText);
         } else {
-          // Restaurant does not exist in the database
-          callback("Restaurant does not exist", null);
+          reject(xhr.status);
         }
-      }
+      };
+      xhr.onerror = _ => {
+        reject(xhr.status);
+      };
+      xhr.send(JSON.stringify(data));
     });
   }
 
+  static setFavorite(id, isFavorite) {
+    //idb idb idb
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open(
+        "PUT",
+        `http://localhost:1337/restaurants/${id}/?is_favorite=${isFavorite}`
+      );
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState > 3 && xhr.status == 200) {
+          resolve(xhr.responseText);
+        } else {
+          reject(xhr.status);
+        }
+      };
+      xhr.send();
+    });
+  }
   /**
    * Fetch restaurants by a cuisine type with proper error handling.
    */
