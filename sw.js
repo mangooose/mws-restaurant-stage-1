@@ -1,5 +1,5 @@
 /*Service worker*/
-// TODO notification 
+// TODO notification
 self.importScripts("./js/idb.js");
 
 const dbPromise = idb.open("restaurants-db", 1, upgradeDb => {
@@ -102,7 +102,6 @@ self.addEventListener("activate", event => {
 
 self.addEventListener("sync", event => {
   if (event.tag === "createReview") {
-    console.log("createReview event fired");
     dbPromise
       .then(db => {
         return db
@@ -113,7 +112,10 @@ self.addEventListener("sync", event => {
       .then(reviews => {
         const reviewPromises = [];
         for (const review of reviews) {
-          reviewPromises.push(createReview(review));
+          const { rating, name, comments, restaurant_id, createdAt } = review;
+          reviewPromises.push(
+            createReview({ rating, name, comments, restaurant_id, createdAt })
+          );
         }
         return Promise.all(reviewPromises);
       })

@@ -166,6 +166,15 @@ submitReviewForm = _ => {
     newReview.createdAt = new Date();
     ul.appendChild(createReviewHTML(newReview));
   })
+  .finally(_=>{
+    resetReviewForm();
+  })
+}
+
+resetReviewForm = _ => {
+  document.getElementById('Rating').value ="";
+  document.getElementById('Name').value="";
+  document.getElementById('Comment').value="";
 }
 
 createReviewFormHTML = _ => {
@@ -265,6 +274,9 @@ createReviewHTML = (review) => {
   title.appendChild(name);
 
   const date = document.createElement('p');
+  if(review.createdAt === undefined){
+    review.createdAt = new Date();
+  }
   date.innerHTML = formatDate(review.createdAt);
   title.appendChild(date);
   li.appendChild(title);

@@ -15,7 +15,7 @@
   <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
   <link rel="preload" as="style" href="css/styles.css" onload="this.rel='stylesheet'">
   <noscript>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.min.css">
   </noscript>
   <title>Restaurant Reviews</title>
   <style>
@@ -101,10 +101,10 @@
     <section>
       <div class="filter-options">
         <h2 id="filter-results">Filter Results</h2>
-        <select id="neighborhoods-select" aria-labelledby="neighborhoods" name="neighborhoods" onchange="updateRestaurants()">
+        <select id="neighborhoods-select" aria-label="select neighborhoods" name="neighborhoods" onchange="updateRestaurants()">
           <option value="all">All Neighborhoods</option>
         </select>
-        <select id="cuisines-select" aria-labelledby="cuisine types" name="cuisines" onchange="updateRestaurants()">
+        <select id="cuisines-select" aria-label="select cuisines" name="cuisines" onchange="updateRestaurants()">
           <option value="all">All Cuisines</option>
         </select>
       </div>
@@ -123,6 +123,10 @@
       navigator.serviceWorker
         .register('sw.js')
         .then(() => { console.log("Service Worker Registered") }).catch(e => { console.log(e) });
+      navigator.serviceWorker.ready.then((swRegistration) => { 
+        console.log('ready')
+        return swRegistration.sync.register('createReview');
+      });
     }
   </script>
   <script async src="js/idb.js" defer></script>

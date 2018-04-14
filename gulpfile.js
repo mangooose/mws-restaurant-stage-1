@@ -1,5 +1,8 @@
-var gulp = require('gulp');
-var $ = require('gulp-load-plugins')();
+const gulp = require('gulp');
+const $ = require('gulp-load-plugins')();
+const cleanCSS = require('gulp-clean-css');
+const rename = require('gulp-rename');
+
 
 gulp.task('images', function () {
   return gulp.src('img/*.{jpg,png}')
@@ -24,4 +27,11 @@ gulp.task('images', function () {
       withMetadata: false,
     }))
     .pipe(gulp.dest('img'));
+});
+
+gulp.task('minify-css', () => {
+  return gulp.src('css/styles.css')
+    .pipe(cleanCSS({compatibility: 'ie8'}))
+    .pipe(rename('style.min.css'))
+    .pipe(gulp.dest('css'));
 });

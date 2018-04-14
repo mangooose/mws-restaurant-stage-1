@@ -147,7 +147,6 @@ class DBHelper {
    * ba3d e submit ken online ab3ath ken offline wela request timeout sajal felindexeddb w kif t7ell lcnx thabat fel reviews w zeyed ab3thou
    */
   static createNewReview(review) {
-    //return new Promise((resolve, reject) => {
     return dbPromise
       .then(db => {
         const tx = db.transaction("reviews", "readwrite");
@@ -162,7 +161,6 @@ class DBHelper {
         return navigator.serviceWorker.ready;
       })
       .then(swRegistration => {
-        localStorage.setItem("lastname", "Smith");
         return swRegistration.sync.register("createReview");
       })
       .finally(_ => {

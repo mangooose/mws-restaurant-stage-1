@@ -18,7 +18,9 @@
   "homepage": "https://github.com/mangooose/mws-restaurant-stage-1#readme",
   "devDependencies": {
     "gulp": "^3.9.1",
+    "gulp-clean-css": "^3.9.3",
     "gulp-load-plugins": "^1.5.0",
+    "gulp-rename": "^1.2.2",
     "gulp-responsive": "^2.8.0"
   }
 }
